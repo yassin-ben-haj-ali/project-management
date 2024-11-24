@@ -1,6 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import router from "./routes/index.js";
+import logger from "./utils/logger.js";
 
 dotenv.config();
 const app = express();
@@ -9,6 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/api",router);
 
 const PORT = process.env.PORT || 8800;
 
@@ -16,7 +19,7 @@ mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
         logger.info('✅ Connected to DB');
-        server.listen(PORT, () => {
+        app.listen(PORT, () => {
             logger.info(`🚀 Server is running on port ${PORT}`);
         });
     })
