@@ -13,6 +13,15 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api",router);
 
+// error handler
+app.use((err, req, res, next) => {
+    if (err.isOperational) {
+        res.status(err.code).json({ message: err.message });
+    } else {
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
 const PORT = process.env.PORT || 8800;
 
 mongoose

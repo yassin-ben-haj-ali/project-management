@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs"
 import User from "../models/User.js";
+import  generateToken  from "../utils/generateToken.js";
+import { AlreadyExistError, BadRequestError } from "../utils/appErrors.js";
 
 
 const authServices = {
@@ -9,7 +11,7 @@ const authServices = {
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            throw new Error("email is already taken")
+            throw new AlreadyExistError("email is already taken")
         }
 
         const salt = bcrypt.genSaltSync(10);
@@ -34,12 +36,14 @@ const authServices = {
         const isPasswordCorrect = await bcrypt.compare(password, user.password ?? "");
 
         if (!user || !isPasswordCorrect) {
-            throw new Error("Invalid email or Password")
+            throw new BadRequestError("Invalid email or Password")
         }
 
+        const token = generateToken({ email: user.email, firstName: user.firstName, lastName: user.lastName });
         return {
             ...user._doc,
             password: "",
+            token
         }
 
     }
