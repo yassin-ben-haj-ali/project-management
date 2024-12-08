@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api",router);
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
     if (err.isOperational) {
         res.status(err.code).json({ message: err.message });
     } else {

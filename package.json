@@ -6,12 +6,16 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon backend/server.js",
+    "lint": "eslint backend",
+    "lint:fix": "eslint --fix backend",
     "start": "node backend/server.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "eslint": "^9.16.0",
+    "nodemon": "^3.1.7",
+    "prettier": "3.4.2"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
