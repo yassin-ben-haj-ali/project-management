@@ -1,7 +1,8 @@
 import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
-import { AlreadyExistError, BadRequestError } from "../utils/appErrors.js";
+import { AlreadyExistError, AuthorizationError, BadRequestError, NotFoundError } from "../utils/appErrors.js";
 
 
 const authServices = {
@@ -50,8 +51,23 @@ const authServices = {
 
     },
 
-    refreshToken: async () => {
+    refreshToken: async (token) => {
+        if (!token) {
+            throw new AuthorizationError();
+        }
+        const isValidToken = jwt.verify(token, process.env.SECRET_REFRESH_TOKEN);
 
+        if (!isValidToken) {
+            throw new AuthorizationError()
+        }
+
+        const user = await User.findById(isValidToken.id).select("-password");
+
+        if (!user) {
+            throw new NotFoundError('user not found')
+        }
+
+        return {token:generateToken({ email: user.email, firstName: user.firstName, lastName: user.lastName })};
     }
 
 
