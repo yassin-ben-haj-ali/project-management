@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
 import router from "./routes/index.js";
 import logger from "./utils/logger.js";
 
@@ -10,10 +11,9 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cookieParser());
 app.use("/api",router);
 
-// error handler
 app.use((err, req, res, next) => {
     if (err.isOperational) {
         res.status(err.code).json({ message: err.message });

@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs"
 import User from "../models/User.js";
-import  generateToken  from "../utils/generateToken.js";
+import generateToken from "../utils/generateToken.js";
 import { AlreadyExistError, BadRequestError } from "../utils/appErrors.js";
 
 
@@ -39,12 +39,18 @@ const authServices = {
             throw new BadRequestError("Invalid email or Password")
         }
 
-        const token = generateToken({ email: user.email, firstName: user.firstName, lastName: user.lastName });
+        const accessToken = generateToken({ email: user.email, firstName: user.firstName, lastName: user.lastName }, 'access');
+        const refreshToken = generateToken({ id: user._id }, 'refresh')
         return {
             ...user._doc,
             password: "",
-            token
+            accessToken,
+            refreshToken
         }
+
+    },
+
+    refreshToken: async () => {
 
     }
 
