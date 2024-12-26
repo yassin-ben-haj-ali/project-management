@@ -1,6 +1,7 @@
-import mongoose from "mongoose";
+import { priority, status } from "../lib/enum";
+import { Schema,model} from "mongoose";
 
-const taskSchema=new mongoose.Schema({
+const taskSchema=new Schema({
     title: {
         type: String,
         required: true,
@@ -15,12 +16,13 @@ const taskSchema=new mongoose.Schema({
       },
       priority: {
         type: String,
-        enum: ['Low', 'Medium', 'High'],
+        enum: Object.values(priority),
       },
       status: {
         type: String,
-        enum: ['Pending', 'In Progress', 'Completed'],
-        default: 'Pending',
+        enum: Object.values(status),
+        default: status.PENDING,
+        required: true,
       },
       subtasks: [{
         type: Schema.Types.ObjectId,
@@ -35,8 +37,12 @@ const taskSchema=new mongoose.Schema({
         ref: 'User',
       }
 
-})
+},
+{
+    timestamps: true
+}
+)
 
-const Task=mongoose.model('Task',taskSchema);
+const Task=model('Task',taskSchema);
 
 export default Task;
