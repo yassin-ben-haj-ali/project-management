@@ -10,7 +10,7 @@
     "lint:fix": "eslint --fix backend",
     "start": "node backend/server.js",
     "prepare": "husky",
-    "format": "prettier --write \"backend/**/*.js\""
+    "format": "prettier --write \"**/*.js\""
   },
   "author": "",
   "license": "ISC",
