@@ -8,12 +8,16 @@
     "dev": "nodemon backend/server.js",
     "lint": "eslint backend",
     "lint:fix": "eslint --fix backend",
-    "start": "node backend/server.js"
+    "start": "node backend/server.js",
+    "prepare": "husky",
+    "format": "prettier --write \"backend/**/*.js\""
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^9.16.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.3.0",
     "nodemon": "^3.1.7",
     "prettier": "3.4.2"
   },
@@ -28,5 +32,8 @@
     "mongoose": "^8.8.2",
     "winston": "^3.17.0",
     "yup": "^1.6.1"
+  },
+  "lint-staged":{
+    "*.js": "prettier --write"
   }
 }

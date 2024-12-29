@@ -1,76 +1,91 @@
-import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
-import User from "../models/User.js";
-import generateToken from "../utils/generateToken.js";
-import { AlreadyExistError, AuthorizationError, BadRequestError, NotFoundError } from "../utils/appErrors.js";
-
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import User from '../models/User.js'
+import generateToken from '../utils/generateToken.js'
+import {
+    AlreadyExistError,
+    AuthorizationError,
+    BadRequestError,
+    NotFoundError,
+} from '../utils/appErrors.js'
 
 const authServices = {
-
     register: async (userData) => {
-        const { email, password } = userData;
+        const { email, password } = userData
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email })
         if (existingUser) {
-            throw new AlreadyExistError("email is already taken")
+            throw new AlreadyExistError('email is already taken')
         }
 
-        const salt = bcrypt.genSaltSync(10);
-        const hashedPassword = bcrypt.hashSync(password, salt);
+        const salt = bcrypt.genSaltSync(10)
+        const hashedPassword = bcrypt.hashSync(password, salt)
 
         const newUser = new User({
             ...userData,
-            password: hashedPassword
-        });
+            password: hashedPassword,
+        })
 
-        await newUser.save();
+        await newUser.save()
 
-        return { ...newUser._doc, password: "" };
+        return { ...newUser._doc, password: '' }
     },
 
     login: async (userData) => {
+        const { email, password } = userData
 
-        const { email, password } = userData;
+        const user = await User.findOne({ email })
 
-        const user = await User.findOne({ email });
-
-        const isPasswordCorrect = await bcrypt.compare(password, user.password ?? "");
+        const isPasswordCorrect = await bcrypt.compare(
+            password,
+            user.password ?? ''
+        )
 
         if (!user || !isPasswordCorrect) {
-            throw new BadRequestError("Invalid email or Password")
+            throw new BadRequestError('Invalid email or Password')
         }
 
-        const accessToken = generateToken({ email: user.email, firstName: user.firstName, lastName: user.lastName }, 'access');
+        const accessToken = generateToken(
+            {
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+            },
+            'access'
+        )
         const refreshToken = generateToken({ id: user._id }, 'refresh')
         return {
             ...user._doc,
-            password: "",
+            password: '',
             accessToken,
-            refreshToken
+            refreshToken,
         }
-
     },
 
     refreshToken: async (token) => {
         if (!token) {
-            throw new AuthorizationError();
+            throw new AuthorizationError()
         }
-        const isValidToken = jwt.verify(token, process.env.SECRET_REFRESH_TOKEN);
+        const isValidToken = jwt.verify(token, process.env.SECRET_REFRESH_TOKEN)
 
         if (!isValidToken) {
             throw new AuthorizationError()
         }
 
-        const user = await User.findById(isValidToken.id).select("-password");
+        const user = await User.findById(isValidToken.id).select('-password')
 
         if (!user) {
             throw new NotFoundError('user not found')
         }
 
-        return {token:generateToken({ email: user.email, firstName: user.firstName, lastName: user.lastName })};
-    }
-
-
+        return {
+            token: generateToken({
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+            }),
+        }
+    },
 }
 
-export default authServices;
+export default authServices
