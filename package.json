@@ -2,13 +2,13 @@
   "name": "project-management-app",
   "version": "1.0.0",
   "description": "",
-  "main": "backend/server.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon backend/server.js",
-    "lint": "eslint backend",
-    "lint:fix": "eslint --fix backend",
-    "start": "node backend/server.js",
+    "dev": "nodemon server.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix",
+    "start": "node server.js",
     "prepare": "husky",
     "format": "prettier --write \"**/*.js\""
   },
